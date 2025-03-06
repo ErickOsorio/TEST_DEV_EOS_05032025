@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace ApplicationToka.Data
+namespace Infrastructure.Data
 {
     public class ApplicationUser : IdentityUser
     {

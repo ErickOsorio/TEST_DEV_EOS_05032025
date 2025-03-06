@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace ApplicationToka.Data
+namespace Infrastructure.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
@@ -54,8 +54,6 @@ namespace ApplicationToka.Data
             {
                 entity.ToTable("UserTokens");
             });
-           
-
         }
     }
 }
