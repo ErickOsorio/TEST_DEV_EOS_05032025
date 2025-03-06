@@ -1,0 +1,27 @@
+﻿<div class="modal fade" id="modalCerrarSesion" tabindex="-1" role="dialog" aria-labelledby="modalCerrarSesionTitle" data-bs-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Account/Login", new { area = "Identity" })">
+                <div class="modal-header bg-light-gradient">
+                    <h6 class="modal-title" id="modalCerrarSesionTitle">Cerrar Sesión</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="la la-times"></i></span>
+                    </button>
+                </div>
+                <!--end modal-header-->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-9">
+                            <h5>¿Estás seguro de que quieres cerrar la sesión?</h5>
+                            <p>Para continuar da click en "Cerrar Sesión", de lo contrario presiona "Cancelar"</p>
+                        </div><!--end col-->
+                    </div><!--end row-->
+                </div><!--end modal-body-->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Cerrar Sesión</button>
+                </div><!--end modal-footer-->
+            </form>
+        </div><!--end modal-content-->
+    </div><!--end modal-dialog-->
+</div><!--end modal-->

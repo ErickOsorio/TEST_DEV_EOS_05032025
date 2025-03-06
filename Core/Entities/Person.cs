@@ -1,7 +1,10 @@
-﻿namespace Core.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Core.Entities
 {
     public class Person
     {
+        [Key]
         public int IdPersonaFisica { get; set; }
         public DateTime FechaRegistro { get; set; }
         public DateTime FechaActualizacion { get; set; }

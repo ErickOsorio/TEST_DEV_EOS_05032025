@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Core.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,8 @@ namespace Infrastructure.Data
             : base(options)
         {
         }
+
+        public DbSet<Person> Tb_PersonasFisicas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -4,7 +4,9 @@ namespace Core.Services
 {
     public interface IPersonsService
     {
-        public IEnumerable<PersonDTO> GetPersons();
+        public IEnumerable<PersonDTO> GetAllPersons();
+
+        public PersonDTO GetPerson(int Id);
 
         void AddPerson(PersonDTO personDTO);
 

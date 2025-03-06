@@ -19,8 +19,10 @@ namespace Infrastructure.Services
 
         public void AddPerson(PersonDTO personDTO)
         {
-            var person = personDTO.FechaRegistro = DateTime.Now;
-            personsRepository.Add(mapper.Map<Person>(person));
+            personDTO.FechaRegistro = DateTime.Now;
+            personDTO.FechaActualizacion = DateTime.Now;
+
+            personsRepository.Add(mapper.Map<Person>(personDTO));
             personsRepository.Save();
         }
 
@@ -37,16 +39,24 @@ namespace Infrastructure.Services
 
         }
 
-        public IEnumerable<PersonDTO> GetPersons()
+        public IEnumerable<PersonDTO> GetAllPersons()
         {
             var persons = personsRepository.GetAll();
             return mapper.Map<IEnumerable<PersonDTO>>(persons);
         }
 
+        public PersonDTO GetPerson(int Id)
+        {
+            var persons = personsRepository.GetById(Id);
+            return mapper.Map<PersonDTO>(persons);
+        }
+
         public void UpdatePerson(PersonDTO personDTO)
         {
             personDTO.FechaActualizacion = DateTime.Now;
-            personsRepository.Update(mapper.Map<Person>(personDTO));
+
+            personsRepository.Update(mapper.Map<Person>(personDTO), p => p.Nombre, p => p.ApellidoPaterno, p => p.ApellidoMaterno,
+                p => p.RFC, p => p.FechaNacimiento, p => p.Activo, p => p.FechaActualizacion);
             personsRepository.Save();
         }
     }

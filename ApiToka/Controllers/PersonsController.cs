@@ -4,12 +4,6 @@ using Core.DTOs;
 using Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ApiToka.Controllers
 {
@@ -20,13 +14,11 @@ namespace ApiToka.Controllers
 
         private readonly IPersonsService personsService;
         private readonly IMapper mapper;
-        private readonly IConfiguration config;
 
         public PersonsController(IPersonsService personsService, IMapper mapper, IConfiguration config)
         {
             this.personsService = personsService;
             this.mapper = mapper;
-            this.config = config;
         }
 
         // GET: api/<PersonsController>
@@ -36,88 +28,121 @@ namespace ApiToka.Controllers
         {
             try
             {
-                var persons = personsService.GetPersons();
+                var persons = personsService.GetAllPersons();
                 return Ok(persons);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, new { error = "Ocurrió un error interno", detalle = ex.Message });
             }
         }
 
         // GET api/<PersonsController>/5
         [Authorize]
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            try
+            {
+                var persons = personsService.GetPerson(id);
+                return Ok(persons);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Ocurrió un error interno", detalle = ex.Message });
+            }
         }
 
         // POST api/<PersonsController>
         [Authorize]
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] PersonRequest personRequest)
         {
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var person = new PersonDTO
+                    {
+                        Nombre = personRequest.Nombre,
+                        ApellidoPaterno = personRequest.ApellidoPaterno,
+                        ApellidoMaterno = personRequest.ApellidoMaterno,
+                        RFC = personRequest.RFC,
+                        FechaNacimiento = personRequest.FechaNacimiento,
+                        Activo = Convert.ToBoolean(personRequest.Activo)
+                    };
+                    personsService.AddPerson(person);
+
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Ocurrió un error interno", detalle = ex.Message });
+            }
+
         }
 
-        // PUT api/<PersonsController>/5
+        // PUT api/<PersonsController>
         [Authorize]
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public IActionResult Put([FromBody] PersonRequest personRequest)
         {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+
+                    if (!personRequest.Id.HasValue)
+                    {
+                        return BadRequest("El Id es obligatorio para la actualización");
+                    }
+
+                    var person = new PersonDTO
+                    {
+                        IdPersonaFisica = (int)personRequest.Id,
+                        Nombre = personRequest.Nombre,
+                        ApellidoPaterno = personRequest.ApellidoPaterno,
+                        ApellidoMaterno = personRequest.ApellidoMaterno,
+                        RFC = personRequest.RFC,
+                        FechaNacimiento = personRequest.FechaNacimiento,
+                        Activo = Convert.ToBoolean(personRequest.Activo)
+                    };
+                    personsService.UpdatePerson(person);
+
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Ocurrió un error interno", detalle = ex.Message });
+            }
         }
 
         // DELETE api/<PersonsController>/5
         [Authorize]
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-        }
-
-        [Route("Auth/GetToken")]
-        [HttpPost]
-        public IActionResult GetToken(AuthRequest authRequest)
-        {
-
-            if (authRequest.Username == null || authRequest.Password == null)
+            try
             {
-                return Unauthorized();
-            }
-
-            if (authRequest.Username == config.GetValue<string>("Auth:Username")
-                && authRequest.Password == config.GetValue<string>("Auth:Password"))
-            {
-                var issuer = config.GetValue<string>("Jwt:Issuer");
-                var audience = config.GetValue<string>("Jwt:Audience");
-                var key = Encoding.ASCII.GetBytes(config.GetValue<string>("Jwt:Key"));
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity([
-                        new Claim("Id", Guid.NewGuid().ToString()),
-                        new Claim(JwtRegisteredClaimNames.Sub, authRequest.Username),
-                        new Claim(JwtRegisteredClaimNames.Email, authRequest.Username),
-                        new Claim(JwtRegisteredClaimNames.Jti,                                                                                                                                                                                                                                                                                              Guid.NewGuid().ToString())
-                    ]),
-                    Expires = DateTime.UtcNow.AddMinutes(5),
-                    Issuer = issuer,
-                    Audience = audience,
-                    SigningCredentials = new SigningCredentials
-                    (new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
-                };
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                var jwtToken = tokenHandler.WriteToken(token);
-                var stringToken = tokenHandler.WriteToken(token);
-
-                return Ok(stringToken);
+                personsService.ChangeStatusPerson(id, 0);
+                return Ok();
 
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest();
+                return StatusCode(500, new { error = "Ocurrió un error interno", detalle = ex.Message });
             }
-
         }
     }
 }

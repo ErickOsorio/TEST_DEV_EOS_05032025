@@ -1,4 +1,6 @@
-using ApplicationToka.Utils;
+﻿using ApplicationToka.Mapper;
+using AspNetCoreHero.ToastNotification;
+using AspNetCoreHero.ToastNotification.Extensions;
 using Core.Interfaces;
 using Core.Services;
 using Infrastructure.Data;
@@ -18,8 +20,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
 
-
-builder.Services.AddAutoMapper(typeof(AutoMapperProfiles), typeof(MappingProfileViewModel));
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 builder.Services.AddScoped<IPersonsService, PersonsService>();
 builder.Services.AddScoped<IPersonsRepository, PersonsRepository>();
 
@@ -32,6 +33,10 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+
+builder.Services.AddNotyf(config => { config.DurationInSeconds = 10; config.IsDismissable = true; config.Position = NotyfPosition.BottomRight; });
+
 
 var app = builder.Build();
 
@@ -49,6 +54,8 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseNotyf();
 
 app.MapControllerRoute(
     name: "default",
