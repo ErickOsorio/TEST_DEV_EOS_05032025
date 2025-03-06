@@ -1,0 +1,6 @@
+@ApiToka_HostAddress = http://localhost:5112
+
+GET {{ApiToka_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
